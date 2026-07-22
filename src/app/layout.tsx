@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import localFont from "next/font/local"
-import "./globals.css"
+import "@/app/globals.css";
 import { Inter } from "next/font/google"
 import { cn } from "@/app/_lib/utils"
 
@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", inter.variable)}>
+    <html lang="en" className={cn("font-sans", inter.variable, "dark") }>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
