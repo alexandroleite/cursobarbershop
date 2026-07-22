@@ -1,13 +1,14 @@
-import type { Config } from "tailwindcss";
-// Ajustado: Importando o plugin usando a sintaxe moderna do TypeScript
-import tailwindcssAnimate from "tailwindcss-animate";
+import type { Config } from "tailwindcss"
+import tailwindcssAnimate from "tailwindcss-animate"
 
 const config: Config = {
+  // AJUSTE 1: Ativa o modo escuro baseado na classe "dark" adicionada no html
+  darkMode: ["class"],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}", 
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     container: {
@@ -19,8 +20,9 @@ const config: Config = {
     },
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        // AJUSTE 2: Adicionado a função hsl() necessária para mapear as cores do Shadcn
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -60,8 +62,7 @@ const config: Config = {
       },
     },
   },
-  // Ajustado: Passando a variável importada diretamente na lista de plugins
   plugins: [tailwindcssAnimate],
-};
+}
 
-export default config;
+export default config
