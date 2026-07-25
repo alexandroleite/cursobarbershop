@@ -1,4 +1,4 @@
-import { Badge } from "lucide-react"
+import { Badge } from "./ui/badge"
 import { Card, CardContent } from "./ui/card"
 import { Avatar, AvatarImage } from "./ui/avatar"
 

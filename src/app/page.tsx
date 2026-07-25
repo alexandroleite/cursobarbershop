@@ -3,11 +3,11 @@ import Header from "./_components/header"
 import { Button } from "@/app/_components/ui/button"
 import { Input } from "./_components/ui/input"
 import Image from "next/image"
-import { Card, CardContent } from "./_components/ui/card"
 import { db } from "./_lib/prisma"
 import BarbershopItem from "./_components/barbershop-items"
 import { quickSearchOptions } from "./_constants/search"
 import BookingItem from "./_components/booking-item"
+import Footer from "./_components/footer"
 
 export default async function Home() {
   console.log("Entrou na Home")
@@ -85,19 +85,7 @@ export default async function Home() {
         </div>
       </div>
 
-      <footer>
-        <Card>
-          <CardContent className="px-5 py-6">
-            <p className="text-sm text-gray-400">
-              © 2026 Copyright <span className="font-bold">FSW Barber</span>
-            </p>
-          </CardContent>
-        </Card>
-
-        <Button>
-          <SearchIcon />
-        </Button>
-      </footer>
+      <Footer />
     </div>
   )
 }
