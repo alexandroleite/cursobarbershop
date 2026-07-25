@@ -7,7 +7,6 @@ import { db } from "./_lib/prisma"
 import BarbershopItem from "./_components/barbershop-items"
 import { quickSearchOptions } from "./_constants/search"
 import BookingItem from "./_components/booking-item"
-import Footer from "./_components/footer"
 
 export default async function Home() {
   console.log("Entrou na Home")
@@ -84,8 +83,6 @@ export default async function Home() {
           ))}
         </div>
       </div>
-
-      <Footer />
     </div>
   )
 }
