@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import { cn } from "@/app/_lib/utils"
 import { Toaster } from "./_components/ui/sonner"
 import Footer from "./_components/footer"
+import AuthProvider from "./_providers/auth"
 
 // Usando a fonte Inter padrão do Shadcn UI
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -26,10 +27,11 @@ export default function RootLayout({
           inter.variable,
         )}
       >
-        {children}
-        <Toaster />
-
-        <Footer />
+        <AuthProvider>
+          {children}
+          <Toaster />
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   )

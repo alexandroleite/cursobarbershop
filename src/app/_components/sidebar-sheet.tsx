@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "./ui/button"
 import { CalendarIcon, HomeIcon, LogInIcon, LogOutIcon } from "lucide-react"
 import { SheetClose, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet"
@@ -12,8 +13,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog"
+import { signIn, signOut, useSession } from "next-auth/react"
+import { Avatar, AvatarImage } from "./ui/avatar"
 
 const SidebarSheet = () => {
+  const { data } = useSession()
+
+  // funcao para logim
+  const handleLoginWidhGoogleClick = () => signIn("google")
+  // funçao para logout
+  const handleLogoutWidhGoogleClick = () => signOut()
+
   return (
     <SheetContent className="overflow-y-auto">
       <SheetHeader>
@@ -22,43 +32,56 @@ const SidebarSheet = () => {
 
       {/* container avatar */}
       <div className="flex items-center justify-between gap-3 border-b border-solid px-2 pb-3">
-        <h2 className="font-bold">Olá faça seu login</h2>
+        {/* se tiver login */}
+        {data?.user ? (
+          <div className="flex items-center gap-2">
+            <Avatar>
+              <AvatarImage src={data?.user?.image ?? ""} />
+            </Avatar>
 
-        <Dialog>
-          <DialogTrigger
-            render={
-              <Button size="icon">
-                <LogInIcon size={18} />
-              </Button>
-            }
-          />
+            <div>
+              <p className="font-bold">{data.user.name}</p>
+              <p className="text-xs">{data.user.email}</p>
+            </div>
+          </div>
+        ) : (
+          // se nao tiver logim rendira abaixo
+          <>
+            <h2 className="font-bold">Olá faça seu login</h2>
 
-          <DialogContent className="w-[90%]">
-            <DialogHeader>
-              <DialogTitle>Faça login na plataforma</DialogTitle>
-              <DialogDescription>
-                Conecte-se usando sua conta do Google
-              </DialogDescription>
-              <Button variant="outline" className="gap-1 font-bold">
-                <Image
-                  src="/google.svg"
-                  height={18}
-                  width={18}
-                  alt="Fazer login com o google"
-                />
-                Google
-              </Button>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+            <Dialog>
+              <DialogTrigger
+                render={
+                  <Button size="icon">
+                    <LogInIcon size={18} />
+                  </Button>
+                }
+              />
 
-        {/* <Avatar>
-          <AvatarImage src="/jin-woo.jpg" />
-        </Avatar>
-        <div>
-          <p className="font-bold">Alexandro N Leite</p>
-          <p className="text-xs">Alexandroleite@hotmail.com</p>
-        </div> */}
+              <DialogContent className="w-[90%]">
+                <DialogHeader>
+                  <DialogTitle>Faça login na plataforma</DialogTitle>
+                  <DialogDescription>
+                    Conecte-se usando sua conta do Google
+                  </DialogDescription>
+                  <Button
+                    variant="outline"
+                    className="gap-1 font-bold"
+                    onClick={handleLoginWidhGoogleClick}
+                  >
+                    <Image
+                      src="/google.svg"
+                      height={18}
+                      width={18}
+                      alt="Fazer login com o google"
+                    />
+                    Google
+                  </Button>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          </>
+        )}
       </div>
 
       {/* renderiza botao inicio e agendamento */}
@@ -104,7 +127,11 @@ const SidebarSheet = () => {
 
       {/* botao sair da conta */}
       <div className="flex flex-col gap-2 px-2 pb-4">
-        <Button variant="ghost" className="justify-start gap-2">
+        <Button
+          variant="ghost"
+          className="justify-start gap-2"
+          onClick={handleLogoutWidhGoogleClick}
+        >
           <LogOutIcon size={18} />
           Sair da conta
         </Button>
