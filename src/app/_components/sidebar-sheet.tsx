@@ -109,19 +109,26 @@ const SidebarSheet = () => {
       {/* renderia as opcoes das buscas dinamicamente */}
       <div className="flex flex-col gap-2 border-b border-solid px-2 pb-4">
         {quickSearchOptions.map((option) => (
-          <Button
+          <SheetClose
             key={option.title}
-            variant="ghost"
-            className="justify-start gap-2"
-          >
-            <Image
-              alt={option.title}
-              src={option.imageUrl}
-              height={18}
-              width={18}
-            />
-            {option.title}
-          </Button>
+            render={
+              <Button
+                variant="ghost"
+                className="justify-start gap-2"
+                render={
+                  <Link href={`/barbershops?service=${option.title}`}>
+                    <Image
+                      alt={option.title}
+                      src={option.imageUrl}
+                      height={18}
+                      width={18}
+                    />
+                    {option.title}
+                  </Link>
+                }
+              ></Button>
+            }
+          />
         ))}
       </div>
 
