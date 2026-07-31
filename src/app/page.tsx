@@ -10,7 +10,8 @@ import Link from "next/link"
 
 export default async function Home() {
   console.log("Entrou na Home")
-  //chamar meu banco de dados
+
+  // Busca as barbearias no banco de dados
   const barbershops = await db.barberShop.findMany({})
   const popularbarbershop = await db.barberShop.findMany({
     orderBy: {
@@ -20,25 +21,25 @@ export default async function Home() {
 
   return (
     <div>
-      {/* header */}
+      {/* Header */}
       <Header />
 
       <div className="p-5">
         <h2 className="text-xl font-bold">Olá Alexandro!</h2>
-        <p>Quarta-feira, 22 de julho.</p>
+        <p className="text-sm text-gray-400">Quarta-feira, 22 de julho.</p>
 
-        {/* busca */}
+        {/* Busca */}
         <div className="mt-6">
           <Search />
         </div>
 
-        {/* Busca rapida */}
-        <div className="mt-6 flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+        {/* Busca rápida */}
+        <div className="-mx-5 mt-6 flex gap-3 overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden">
           {quickSearchOptions.map((option) => (
             <Button
               key={option.title}
               variant="secondary"
-              className="gap-2"
+              className="shrink-0 gap-2 rounded-full"
               render={<Link href={`/barbershops?service=${option.title}`} />}
             >
               {option.imageUrl && (
@@ -54,7 +55,7 @@ export default async function Home() {
           ))}
         </div>
 
-        {/* banner */}
+        {/* Banner */}
         <div className="relative mt-6 h-[150px] w-full">
           <Image
             src="/banner-01.png"
@@ -64,24 +65,24 @@ export default async function Home() {
           />
         </div>
 
+        {/* Agendamento Ativo */}
         <BookingItem />
 
-        {/* barbearias recomendadas */}
+        {/* Barbearias Recomendadas */}
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Recomendados
         </h2>
-        <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
+        <div className="-mx-7 flex gap-2 overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden">
           {barbershops.map((barbershop) => (
             <BarbershopItem key={barbershop.id} barbershop={barbershop} />
           ))}
         </div>
 
-        {/* barbearias populares */}
-
+        {/* Barbearias Populares */}
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Populares
         </h2>
-        <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
+        <div className="-mx-7 flex gap-2 overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden">
           {popularbarbershop.map((barbershop) => (
             <BarbershopItem key={barbershop.id} barbershop={barbershop} />
           ))}
