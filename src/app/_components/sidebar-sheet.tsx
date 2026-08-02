@@ -5,22 +5,14 @@ import { SheetClose, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet"
 import { quickSearchOptions } from "../_constants/search"
 import Link from "next/link"
 import Image from "next/image"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog"
-import { signIn, signOut, useSession } from "next-auth/react"
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
+import { signOut, useSession } from "next-auth/react"
 import { Avatar, AvatarImage } from "./ui/avatar"
+import SignInDialog from "./sign-in-dialog"
 
 const SidebarSheet = () => {
   const { data } = useSession()
 
-  // funcao para logim
-  const handleLoginWidhGoogleClick = () => signIn("google")
   // funçao para logout
   const handleLogoutWidhGoogleClick = () => signOut()
 
@@ -57,27 +49,9 @@ const SidebarSheet = () => {
                   </Button>
                 }
               />
-
+              {/* renderiza o login */}
               <DialogContent className="w-[90%]">
-                <DialogHeader>
-                  <DialogTitle>Faça login na plataforma</DialogTitle>
-                  <DialogDescription>
-                    Conecte-se usando sua conta do Google
-                  </DialogDescription>
-                  <Button
-                    variant="outline"
-                    className="gap-1 font-bold"
-                    onClick={handleLoginWidhGoogleClick}
-                  >
-                    <Image
-                      src="/google.svg"
-                      height={18}
-                      width={18}
-                      alt="Fazer login com o google"
-                    />
-                    Google
-                  </Button>
-                </DialogHeader>
+                <SignInDialog />
               </DialogContent>
             </Dialog>
           </>
@@ -133,16 +107,18 @@ const SidebarSheet = () => {
       </div>
 
       {/* botao sair da conta */}
-      <div className="flex flex-col gap-2 px-2 pb-4">
-        <Button
-          variant="ghost"
-          className="justify-start gap-2"
-          onClick={handleLogoutWidhGoogleClick}
-        >
-          <LogOutIcon size={18} />
-          Sair da conta
-        </Button>
-      </div>
+      {data?.user && (
+        <div className="flex flex-col gap-2 px-2 pb-4">
+          <Button
+            variant="ghost"
+            className="justify-start gap-2"
+            onClick={handleLogoutWidhGoogleClick}
+          >
+            <LogOutIcon size={18} />
+            Sair da conta
+          </Button>
+        </div>
+      )}
     </SheetContent>
   )
 }
