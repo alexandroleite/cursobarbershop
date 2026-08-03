@@ -15,12 +15,12 @@ import { Calendar } from "./ui/calendar"
 import { ptBR } from "date-fns/locale"
 import { useEffect, useState } from "react"
 import { startOfDay, format, set } from "date-fns"
-import CreateBooking from "../_actions/create-booking"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
 import { getBookings } from "../_actions/get-booking"
 import { Dialog, DialogContent } from "./ui/dialog"
 import SignInDialog from "./sign-in-dialog"
+import { createBooking } from "../_actions/create-booking"
 
 interface ServiceItemProps {
   service: BarberShopService
@@ -120,11 +120,7 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
 
   const handleCreateBooking = async () => {
     try {
-      // Garante que o usuário está logado e possui ID
-      if (!selectDay || !selectedTime || !data?.user?.id) {
-        toast.error("Faça login para realizar uma reserva!")
-        return
-      }
+      if (!selectDay || !selectedTime) return
 
       const hour = Number(selectedTime.split(":")[0])
       const minute = Number(selectedTime.split(":")[1])
@@ -134,12 +130,12 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
         minutes: minute,
       })
 
-      // Como verificamos data?.user?.id no 'if', o TS sabe que aqui é obrigatoriamente string
-      await CreateBooking({
+      // Caso a Server Action NÃO precise mais do userId enviado pelo cliente:
+      await createBooking({
         serviceId: service.id,
-        userId: data.user.id,
         date: newDate,
       })
+
       handleBookingSheetOpenChange()
       toast.success("Reserva criada com sucesso!")
     } catch (error) {
