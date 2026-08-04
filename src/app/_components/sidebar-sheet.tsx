@@ -74,10 +74,16 @@ const SidebarSheet = () => {
           }
         />
 
-        <Button variant="ghost" className="justify-start gap-2">
-          <CalendarIcon size={18} />
-          Agendamentos
-        </Button>
+        <Button
+          variant="ghost"
+          className="justify-start gap-2"
+          render={
+            <Link href="/bookings">
+              <CalendarIcon size={18} />
+              Agendamentos
+            </Link>
+          }
+        />
       </div>
 
       {/* renderia as opcoes das buscas dinamicamente */}
