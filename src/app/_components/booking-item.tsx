@@ -4,6 +4,15 @@ import { Avatar, AvatarImage } from "./ui/avatar"
 import { Prisma } from "@prisma/client"
 import { format, isFuture } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet"
+import Image from "next/image"
+import PhoneItem from "./phone-item"
 
 interface BookingItemProps {
   booking: Prisma.BookingGetPayload<{
@@ -19,49 +28,131 @@ interface BookingItemProps {
 
 //TODO: receber agendamentos como prop
 const BookingItem = ({ booking }: BookingItemProps) => {
+  const {
+    sevice: { barberShop },
+  } = booking
   const isConfirmed = isFuture(booking.date)
   return (
-    <>
-      {/* agendamentos */}
+    <Sheet>
+      <SheetTrigger className="w-full">
+        {/* agendamentos */}
 
-      <Card className="min-w-[90%]">
-        <CardContent className="flex justify-between p-0">
-          {/* esquerda */}
-          <div className="flex flex-col gap-2 py-5 pl-5">
-            <Badge
-              className="w-fit rounded-xl"
-              variant={isConfirmed ? "default" : "secondary"}
-            >
-              {isConfirmed ? "Confirmado" : "Finalizado"}
-            </Badge>
-            <h3 className="font-semibold">{booking.sevice.name}</h3>
+        <Card className="min-w-[90%]">
+          <CardContent className="flex justify-between p-0">
+            {/* esquerda */}
+            <div className="flex flex-col gap-2 py-5 pl-5">
+              <Badge
+                className="w-fit rounded-xl"
+                variant={isConfirmed ? "default" : "secondary"}
+              >
+                {isConfirmed ? "Confirmado" : "Finalizado"}
+              </Badge>
+              <h3 className="font-semibold">{booking.sevice.name}</h3>
 
-            <div className="flex items-center gap-2">
-              <Avatar className="h-6 w-6">
-                <AvatarImage
-                  src="https://utfs.io/f/c97a2dc9-cf62-468b-a851-bfd2bdde775f-16p.png"
-                  alt="avatar"
-                />
-              </Avatar>
-              <p className="text-sm">{booking.sevice.barberShop.name}</p>
+              <div className="flex items-center gap-2">
+                <Avatar className="h-6 w-6">
+                  <AvatarImage
+                    src="https://utfs.io/f/c97a2dc9-cf62-468b-a851-bfd2bdde775f-16p.png"
+                    alt="avatar"
+                  />
+                </Avatar>
+                <p className="text-sm">{booking.sevice.barberShop.name}</p>
+              </div>
             </div>
-          </div>
 
-          {/* div direita */}
-          <div className="flex flex-col justify-center gap-2 border-l-2 border-solid px-5">
-            <p className="text-sm capitalize">
-              {format(booking.date, "MMMM", { locale: ptBR })}
-            </p>
-            <p className="text-2xl">
-              {format(booking.date, "dd", { locale: ptBR })}
-            </p>
-            <p className="text-sm">
-              {format(booking.date, "HH:mm", { locale: ptBR })}
-            </p>
+            {/* div direita */}
+            <div className="flex flex-col justify-center gap-2 border-l-2 border-solid px-5">
+              <p className="text-sm capitalize">
+                {format(booking.date, "MMMM", { locale: ptBR })}
+              </p>
+              <p className="text-2xl">
+                {format(booking.date, "dd", { locale: ptBR })}
+              </p>
+              <p className="text-sm">
+                {format(booking.date, "HH:mm", { locale: ptBR })}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </SheetTrigger>
+      <SheetContent className="w-[90%]">
+        <SheetHeader>
+          <SheetTitle className="text-left">Informações da reserva</SheetTitle>
+        </SheetHeader>
+
+        <div className="relative mt-6 flex h-[180px] w-full items-end">
+          <Image
+            alt={`Mapa da barbearia ${booking.sevice.barberShop.name}`}
+            src="/map.png"
+            fill
+            className="rounded-xl object-cover"
+          />
+
+          <Card className="z-50 mx-5 mb-3 w-full rounded-xl">
+            <CardContent className="flex items-center gap-3 px-5 py-3">
+              <Avatar>
+                <AvatarImage src={barberShop.imageUrl} />
+              </Avatar>
+              <div>
+                <h3 className="font-bold">{barberShop.name}</h3>
+                <p className="text-xs">{barberShop.address}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="mt-6">
+          <Badge
+            className="w-fit rounded-xl"
+            variant={isConfirmed ? "default" : "secondary"}
+          >
+            {isConfirmed ? "Confirmado" : "Finalizado"}
+          </Badge>
+
+          <Card className="mb-6 mt-3">
+            <CardContent className="space-y-3 p-3">
+              {/* o nome do serviço */}
+              <div className="flex items-center justify-between">
+                <h2 className="font-bold">{booking.sevice.name}</h2>
+                <p className="text-sm font-bold">
+                  {Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(Number(booking.sevice.price))}
+                </p>
+              </div>
+              {/* seleçao da data */}
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm text-gray-400">Data</h2>
+                <p className="text-sm">
+                  {format(booking.date, "d 'de' MMMM", {
+                    locale: ptBR,
+                  })}
+                </p>
+              </div>
+              {/* selçao do horario */}
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm text-gray-400">Horario</h2>
+                <p className="text-sm">
+                  {format(booking.date, "HH:mm", { locale: ptBR })}
+                </p>
+              </div>
+              {/* nome da barbearia */}
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm text-gray-400">Barbearia</h2>
+                <p className="text-sm">{booking.sevice.name}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="space-y-3">
+            {barberShop.phones.map((phone, index) => (
+              <PhoneItem key={index} phone={phone} />
+            ))}
           </div>
-        </CardContent>
-      </Card>
-    </>
+        </div>
+      </SheetContent>
+    </Sheet>
   )
 }
 
