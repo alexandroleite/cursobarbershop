@@ -72,7 +72,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
       <SheetTrigger className="w-full">
         {/* agendamentos */}
 
-        <Card className="min-w-[90%]">
+        <Card className="min-w-[280px]">
           <CardContent className="flex justify-between p-0">
             {/* esquerda */}
             <div className="flex flex-col gap-2 py-5 pl-5">
@@ -115,7 +115,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
           <SheetTitle className="text-left">Informações da reserva</SheetTitle>
         </SheetHeader>
 
-        <div className="relative mt-6 flex h-[180px] w-full items-end">
+        <div className="relative mr-5 mt-6 flex h-[180px] w-full items-end">
           <Image
             alt={`Mapa da barbearia ${booking.sevice.barberShop.name}`}
             src="/map.png"
@@ -136,7 +136,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
           </Card>
         </div>
 
-        <div className="mt-6">
+        <div className="mx-2 mt-6">
           <Badge
             className="w-fit rounded-xl"
             variant={isConfirmed ? "default" : "secondary"}
@@ -180,7 +180,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
             </CardContent>
           </Card>
 
-          <div className="space-y-3">
+          <div className="space-y-3 p-2">
             {barberShop.phones.map((phone, index) => (
               <PhoneItem key={index} phone={phone} />
             ))}
