@@ -29,6 +29,6 @@ export const createBooking = async (params: CreateBookingParams) => {
   })
 
   // 3. Revalida a rota específica das reservas do usuário ou da barbearia
+  revalidatePath("/barbershops/[id]")
   revalidatePath("/bookings")
-  revalidatePath("/", "layout") // Revalida o layout global se necessário
 }
