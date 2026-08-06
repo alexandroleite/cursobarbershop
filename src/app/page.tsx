@@ -11,6 +11,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "./_lib/auth"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { getComfirmedBookings } from "./_data/get-confirmed-bookings"
 
 export default async function Home() {
   //pega a sessao do usuario (usuario logado)
@@ -24,26 +25,7 @@ export default async function Home() {
     },
   })
 
-  const confimedBookings = session?.user
-    ? await db.booking.findMany({
-        where: {
-          userId: session?.user.id,
-          date: {
-            gte: new Date(),
-          },
-        },
-        include: {
-          sevice: {
-            include: {
-              barberShop: true,
-            },
-          },
-        },
-        orderBy: {
-          date: "asc",
-        },
-      })
-    : []
+  const confimedBookings = await getComfirmedBookings()
 
   return (
     <div>
