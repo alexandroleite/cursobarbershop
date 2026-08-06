@@ -3,7 +3,7 @@
 import { BarberShop, BarberShopService, Booking } from "@prisma/client"
 import Image from "next/image"
 import { Button } from "./ui/button"
-import { Card, CardContent } from "./ui/card"
+import { Card } from "./ui/card"
 import {
   Sheet,
   SheetClose,
@@ -15,13 +15,14 @@ import {
 import { Calendar } from "./ui/calendar"
 import { ptBR } from "date-fns/locale"
 import { useEffect, useMemo, useState } from "react"
-import { isPast, startOfDay, format, set, isToday } from "date-fns"
+import { isPast, startOfDay, set, isToday } from "date-fns"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
 import { getBookings } from "../_actions/get-booking"
 import { Dialog, DialogContent } from "./ui/dialog"
 import SignInDialog from "./sign-in-dialog"
 import { createBooking } from "../_actions/create-booking"
+import BookingSummary from "./booking-summary"
 
 interface ServiceItemProps {
   service: BarberShopService
@@ -54,10 +55,10 @@ const TIME_LIST = [
 
 interface GetTimeListProps {
   bookings: Booking[]
-  selectDay: Date
+  selectedDay: Date
 }
 
-const getTimeList = ({ bookings, selectDay }: GetTimeListProps) => {
+const getTimeList = ({ bookings, selectedDay }: GetTimeListProps) => {
   return TIME_LIST.filter((time) => {
     const hour = Number(time.split(":")[0])
     const minute = Number(time.split(":")[1])
@@ -70,7 +71,7 @@ const getTimeList = ({ bookings, selectDay }: GetTimeListProps) => {
         milliseconds: 0,
       }),
     )
-    if (timeIsOnThePast && isToday(selectDay)) {
+    if (timeIsOnThePast && isToday(selectedDay)) {
       return false
     }
     const hasBookingOnCurrentTime = bookings.some(
@@ -89,7 +90,7 @@ const getTimeList = ({ bookings, selectDay }: GetTimeListProps) => {
 const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
   const [signInDialogIsOpen, SetSignInDialogIsOpen] = useState(false)
   const { data } = useSession()
-  const [selectDay, setSelectDay] = useState<Date | undefined>(undefined)
+  const [selectedDay, setSelectDay] = useState<Date | undefined>(undefined)
   const [selectedTime, setSelectedTime] = useState<string | undefined>(
     undefined,
   )
@@ -98,15 +99,23 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
 
   useEffect(() => {
     const fetch = async () => {
-      if (!selectDay) return
+      if (!selectedDay) return
       const bookings = await getBookings({
-        date: selectDay,
+        date: selectedDay,
         serviceId: service.id,
       })
       setDayBookings(bookings)
     }
     fetch()
-  }, [selectDay, service.id])
+  }, [selectedDay, service.id])
+
+  const selectedDate = useMemo(() => {
+    if (!selectedDay || !selectedTime) return
+    return set(selectedDay, {
+      hours: Number(selectedTime?.split(":")[0]),
+      minutes: Number(selectedTime?.split(":")[1]),
+    })
+  }, [selectedDay, selectedTime]) // <-- Ajustado e fechado corretamente!
 
   const handleBookingClick = () => {
     if (data?.user) {
@@ -133,19 +142,10 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
 
   const handleCreateBooking = async () => {
     try {
-      if (!selectDay || !selectedTime) return
-
-      const hour = Number(selectedTime.split(":")[0])
-      const minute = Number(selectedTime.split(":")[1])
-
-      const newDate = set(selectDay, {
-        hours: hour,
-        minutes: minute,
-      })
-
+      if (!selectedDate) return
       await createBooking({
         serviceId: service.id,
-        date: newDate,
+        date: selectedDate,
       })
 
       handleBookingSheetOpenChange()
@@ -157,12 +157,12 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
   }
 
   const timeList = useMemo(() => {
-    if (!selectDay) return []
+    if (!selectedDay) return []
     return getTimeList({
       bookings: dayBookings,
-      selectDay,
+      selectedDay,
     })
-  }, [dayBookings, selectDay])
+  }, [dayBookings, selectedDay])
 
   return (
     <>
@@ -201,7 +201,6 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
                   Reservar
                 </Button>
 
-                {/* Mantida a largura padrão do Sheet */}
                 <SheetContent className="flex h-full flex-col overflow-x-hidden px-0">
                   <SheetHeader className="px-5 pb-2 text-left">
                     <SheetTitle>Fazer reserva</SheetTitle>
@@ -211,7 +210,7 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
                     {/* Calendário */}
                     <div className="border-b border-solid px-3 pb-2">
                       <Calendar
-                        selected={selectDay}
+                        selected={selectedDay}
                         onSelect={handleDateSelect}
                         mode="single"
                         locale={ptBR}
@@ -235,7 +234,7 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
                     </div>
 
                     {/* Lista de Horários */}
-                    {selectDay && (
+                    {selectedDay && (
                       <div className="flex items-center gap-2 overflow-x-auto border-b border-solid py-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                         {timeList && timeList.length > 0 ? (
                           timeList.map((time, index) => (
@@ -260,49 +259,20 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
                       </div>
                     )}
 
-                    {/* Resumo centralizado no espaço vago via my-auto */}
-                    {selectedTime && selectDay && (
+                    {/* Resumo */}
+                    {selectedDate && (
                       <div className="my-auto px-5 py-3">
-                        <Card>
-                          <CardContent className="space-y-3 p-3">
-                            <div className="flex items-center justify-between">
-                              <h2 className="font-bold">{service.name}</h2>
-                              <p className="text-sm font-bold">
-                                {Intl.NumberFormat("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL",
-                                }).format(Number(service.price))}
-                              </p>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                              <h2 className="text-sm text-gray-400">Data</h2>
-                              <p className="text-sm">
-                                {format(selectDay, "d 'de' MMMM", {
-                                  locale: ptBR,
-                                })}
-                              </p>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                              <h2 className="text-sm text-gray-400">Horário</h2>
-                              <p className="text-sm">{selectedTime}</p>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                              <h2 className="text-sm text-gray-400">
-                                Barbearia
-                              </h2>
-                              <p className="text-sm">{barbershop.name}</p>
-                            </div>
-                          </CardContent>
-                        </Card>
+                        <BookingSummary
+                          barbershop={barbershop}
+                          service={service}
+                          selectedDate={selectedDate}
+                        />
                       </div>
                     )}
                   </div>
 
                   {/* Botão de Confirmar no Rodapé */}
-                  {selectedTime && selectDay && (
+                  {selectedTime && selectedDay && (
                     <SheetFooter className="border-t border-solid p-5">
                       <SheetClose
                         render={

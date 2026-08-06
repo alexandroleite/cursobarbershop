@@ -31,6 +31,7 @@ import {
 import { deleteBooking } from "../_actions/delete-booking"
 import { toast } from "sonner"
 import { useState } from "react"
+import BookingSummary from "./booking-summary"
 
 interface BookingItemProps {
   booking: Prisma.BookingGetPayload<{
@@ -144,41 +145,13 @@ const BookingItem = ({ booking }: BookingItemProps) => {
             {isConfirmed ? "Confirmado" : "Finalizado"}
           </Badge>
 
-          <Card className="mb-6 mt-3">
-            <CardContent className="space-y-3 p-3">
-              {/* o nome do serviço */}
-              <div className="flex items-center justify-between">
-                <h2 className="font-bold">{booking.sevice.name}</h2>
-                <p className="text-sm font-bold">
-                  {Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(Number(booking.sevice.price))}
-                </p>
-              </div>
-              {/* seleçao da data */}
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm text-gray-400">Data</h2>
-                <p className="text-sm">
-                  {format(booking.date, "d 'de' MMMM", {
-                    locale: ptBR,
-                  })}
-                </p>
-              </div>
-              {/* selçao do horario */}
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm text-gray-400">Horario</h2>
-                <p className="text-sm">
-                  {format(booking.date, "HH:mm", { locale: ptBR })}
-                </p>
-              </div>
-              {/* nome da barbearia */}
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm text-gray-400">Barbearia</h2>
-                <p className="text-sm">{booking.sevice.name}</p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="mb-3 mt-6">
+            <BookingSummary
+              barbershop={barberShop}
+              service={booking.sevice}
+              selectedDate={booking.date}
+            />
+          </div>
 
           <div className="space-y-3 p-2">
             {barberShop.phones.map((phone, index) => (
